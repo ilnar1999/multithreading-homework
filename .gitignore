@@ -1,2 +1,4 @@
 # Project exclude paths
 /target/
+/multithreading-homework.iml
+/.idea/
