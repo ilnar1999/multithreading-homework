@@ -12,13 +12,26 @@ public class RequestRepository {
     private final Logger logger = LoggerFactory.getLogger("file-logger");
 
     public synchronized void add(BookingRequest bookingRequest) {
-        this.logger.info("producer {}: sent request №{}", Thread.currentThread().getName(), bookingRequest.getId());
-        this.requests.add(bookingRequest);
+        synchronized (this.logger) {
+            this.logger.info("producer {}: sent request №{}", Thread.currentThread().getName(), bookingRequest.getId());
+        }
+
+        synchronized (this.requests) {
+            this.requests.add(bookingRequest);
+        }
     }
 
     public synchronized BookingRequest get() {
-        BookingRequest bookingRequest = this.requests.poll();
-        this.logger.info("booker {}: received request №{}", Thread.currentThread().getName(), bookingRequest.getId());
+        BookingRequest bookingRequest;
+
+        synchronized (this.requests) {
+            bookingRequest = this.requests.poll();
+        }
+
+        synchronized (this.logger) {
+            this.logger.info("consumer {}: received request №{}", Thread.currentThread().getName(), bookingRequest.getId());
+        }
+
         return bookingRequest;
     }
 
