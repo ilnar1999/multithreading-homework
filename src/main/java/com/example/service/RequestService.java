@@ -9,7 +9,7 @@ public class RequestService {
     private final RequestRepository requestRepository = new RequestRepository();
 
     public synchronized void add(BookingRequest bookingRequest) {
-        while (this.countOfRequests() >= MAX_QUEUE_SIZE) {
+        while (this.requestRepository.countOfRequests() >= MAX_QUEUE_SIZE) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -22,7 +22,7 @@ public class RequestService {
     }
 
     public synchronized BookingRequest get() {
-        while (this.isEmpty()) {
+        while (this.requestRepository.isEmpty()) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -31,13 +31,5 @@ public class RequestService {
             }
         }
         return this.requestRepository.get();
-    }
-
-    public synchronized boolean isEmpty() {
-        return this.requestRepository.isEmpty();
-    }
-
-    public synchronized int countOfRequests() {
-        return this.requestRepository.countOfRequests();
     }
 }
